@@ -7,4 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Usuario extends Model
 {
     protected $table = 'usuarios';
+
+     public function Rol()
+    {
+    	return $this->hasone(Rol::class, 'id', 'rol');
+    }
 }

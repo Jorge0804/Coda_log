@@ -32,8 +32,10 @@ class PDFController extends Controller
     	//return $pdf->download("Reporte_ventas.pdf");
     }
 
-    function DescargarPDF($folio)
+    function DescargarPDF(Request $r, $folio)
     {
+        $nombres = $r->nombres;
+
         $coti = Cotizacion::with('cliente')->with('ruta')->with('camion')->with('cvo')->with('cvm')->with('io')->with('cfo')->with('cfa')->with('cf')->where('folio', '=', $folio)->first();
         $coti->ruta->ciudad_origen = Ciudad::find($coti->ruta->ciudad_origen);
         $coti->ruta->ciudad_origen->estado = Estado::find($coti->ruta->ciudad_origen->estado);
@@ -41,11 +43,13 @@ class PDFController extends Controller
         $coti->ruta->ciudad_destino = Ciudad::find($coti->ruta->ciudad_destino);
         $coti->ruta->ciudad_destino->estado = Estado::find($coti->ruta->ciudad_destino->estado);
         $coti->camion->tipo_configuracion = Tipo_configuracion::find($coti->camion->tipo_configuracion);
-        return PDF::loadView("pdf.reporte_cotizacion", compact('coti'))->download();
+        return PDF::loadView("pdf.reporte_cotizacion", compact('coti'), compact('nombres'))->download('RC'.$coti->folio.'-'.$coti['cliente']['nombre'].' '.$coti->fecha.'.pdf');
     }
 
-    function VisualizarPDF($folio)
+    function VisualizarPDF(Request $r, $folio)
     {
+        $nombres = $r->nombres;
+
         $coti = Cotizacion::with('cliente')->with('ruta')->with('camion')->with('cvo')->with('cvm')->with('io')->with('cfo')->with('cfa')->with('cf')->where('folio', '=', $folio)->first();
         $coti->ruta->ciudad_origen = Ciudad::find($coti->ruta->ciudad_origen);
         $coti->ruta->ciudad_origen->estado = Estado::find($coti->ruta->ciudad_origen->estado);
@@ -53,6 +57,6 @@ class PDFController extends Controller
         $coti->ruta->ciudad_destino = Ciudad::find($coti->ruta->ciudad_destino);
         $coti->ruta->ciudad_destino->estado = Estado::find($coti->ruta->ciudad_destino->estado);
         $coti->camion->tipo_configuracion = Tipo_configuracion::find($coti->camion->tipo_configuracion);
-        return PDF::loadView("pdf.reporte_cotizacion", compact('coti'))->stream();
+        return PDF::loadView("pdf.reporte_cotizacion", compact('coti'), compact('nombres'))->stream();
     }
 }

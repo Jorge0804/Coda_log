@@ -400,10 +400,10 @@ class CalculosController extends Controller
                 $resumen['viajes_unidad'] = $info_general['Viajes por unidad'];
                 $resumen['distancia_viaje'] = $info_general['Distancia por viaje'];
                 $resumen['ventas_viaje'] = $info_general['Venta por viaje'];
-                $resumen['incremento_casetas'] = $info_general['% Incremento Casetas 2019'];
-                $resumen['precio_diesel'] = $info_general['Precio de Diesel (sin IVA) con % Incremento 2019'];
+                $resumen['incremento_casetas'] = $info_general['% Incremento Casetas'];
+                $resumen['precio_diesel'] = $info_general['Precio de Diesel (sin IVA)'];
                 $resumen['iva'] = $info_general->iva;
-                $resumen['precio_iva'] = $info_general['Precio de Diesel (sin IVA) con % Incremento 2019']*$info_general->iva;
+                $resumen['precio_iva'] = $info_general['iva']*$info_general->iva;
 
                 $cvo = CVO::find($reporte->cvo);
                 $resumen['diesel'] = $cvo->total_costo_diesel;
@@ -433,10 +433,11 @@ class CalculosController extends Controller
                 $resumen['cfa_otros'] = $cfa->otros;
                 $resumen['cfa_total'] = $cfa->costo;
 
-                $cif = CF::find($reporte->cif_mensual);
+                $cif = CF::find($reporte->cf);
                 $resumen['intereses'] = $cif->intereses;
                 $resumen['cif_total'] = $cif->costo;
 
+                return $resumen;
                 break;
             case 'anual':
                 $reportes = Reporte_mensual::where('año','=', $datos['año'])->get();
@@ -451,10 +452,10 @@ class CalculosController extends Controller
                     $resumen['viajes_unidad'] += $info_general['Viajes por unidad'];
                     $resumen['distancia_viaje'] += $info_general['Distancia por viaje'];
                     $resumen['ventas_viaje'] += $info_general['Venta por viaje'];
-                    $resumen['incremento_casetas'] += $info_general['% Incremento Casetas 2019'];
-                    $resumen['precio_diesel'] += $info_general['Precio de Diesel (sin IVA) con % Incremento 2019'];
+                    $resumen['incremento_casetas'] += $info_general['% Incremento Casetas'];
+                    $resumen['precio_diesel'] += $info_general['Precio de Diesel (sin IVA)'];
                     $resumen['iva'] += $info_general->iva;
-                    $resumen['precio_iva'] += $info_general['Precio de Diesel (sin IVA) con % Incremento 2019']*$info_general->iva;
+                    $resumen['precio_iva'] += $info_general['iva']*$info_general->iva;
 
                     $cvo = CVO::find($reporte->cvo);
                     $resumen['diesel'] += $cvo->total_costo_diesel;
@@ -484,7 +485,7 @@ class CalculosController extends Controller
                     $resumen['cfa_otros'] += $cfa->otros;
                     $resumen['cfa_total'] += $cfa->costo;
 
-                    $cif = CF::find($reporte->cif_mensual);
+                    $cif = CF::find($reporte->cf);
                     $resumen['intereses'] += $cif->intereses;
                     $resumen['cif_total'] += $cif->costo;
                 }
@@ -504,10 +505,10 @@ class CalculosController extends Controller
                     $resumen['viajes_unidad'] += $info_general['Viajes por unidad']/$num;
                     $resumen['distancia_viaje'] += $info_general['Distancia por viaje']/$num;
                     $resumen['ventas_viaje'] += $info_general['Venta por viaje']/$num;
-                    $resumen['incremento_casetas'] += $info_general['% Incremento Casetas 2019']/$num;
-                    $resumen['precio_diesel'] += $info_general['Precio de Diesel (sin IVA) con % Incremento 2019']/$num;
+                    $resumen['incremento_casetas'] += $info_general['% Incremento Casetas']/$num;
+                    $resumen['precio_diesel'] += $info_general['Precio de Diesel (sin IVA)']/$num;
                     $resumen['iva'] += $info_general->iva/$num;
-                    $resumen['precio_iva'] += $info_general['Precio de Diesel (sin IVA) con % Incremento 2019']*$info_general->iva/$num;
+                    $resumen['precio_iva'] += $info_general['iva']*$info_general->iva/$num;
 
                     $cvo = CVO::find($reporte->cvo);
                     $resumen['diesel'] += $cvo->total_costo_diesel/$num;
@@ -533,11 +534,11 @@ class CalculosController extends Controller
                     $resumen['io_total'] += $io->costo/$num;
 
                     $cfa = CFA::find($reporte->cfa);
-                    $resumen['sueldos_salarios'] += $cfa->sueldos;
+                    $resumen['sueldos_salarios'] += $cfa->sueldos/$num;
                     $resumen['cfa_otros'] += $cfa->otros/$num;
                     $resumen['cfa_total'] += $cfa->costo/$num;
 
-                    $cif = CF::find($reporte->cif_mensual);
+                    $cif = CF::find($reporte->cf);
                     $resumen['intereses'] += $cif->intereses/$num;
                     $resumen['cif_total'] += $cif->costo/$num;
                 }
@@ -556,10 +557,10 @@ class CalculosController extends Controller
                     $resumen['viajes_unidad'] += $info_general['Viajes por unidad'];
                     $resumen['distancia_viaje'] += $info_general['Distancia por viaje'];
                     $resumen['ventas_viaje'] += $info_general['Venta por viaje'];
-                    $resumen['incremento_casetas'] += $info_general['% Incremento Casetas 2019'];
-                    $resumen['precio_diesel'] += $info_general['Precio de Diesel (sin IVA) con % Incremento 2019'];
+                    $resumen['incremento_casetas'] += $info_general['% Incremento Casetas'];
+                    $resumen['precio_diesel'] += $info_general['Precio de Diesel (sin IVA)'];
                     $resumen['iva'] += $info_general->iva;
-                    $resumen['precio_iva'] += $info_general['Precio de Diesel (sin IVA) con % Incremento 2019']*$info_general->iva;
+                    $resumen['precio_iva'] += $info_general['iva']*$info_general->iva;
 
                     $cvo = CVO::find($reporte->cvo);
                     $resumen['diesel'] += $cvo->total_costo_diesel;
@@ -589,7 +590,7 @@ class CalculosController extends Controller
                     $resumen['cfa_otros'] += $cfa->otros;
                     $resumen['cfa_total'] += $cfa->costo;
 
-                    $cif = CF::find($reporte->cif_mensual);
+                    $cif = CF::find($reporte->cf);
                     $resumen['intereses'] += $cif->intereses;
                     $resumen['cif_total'] += $cif->costo;
                 }
@@ -599,10 +600,10 @@ class CalculosController extends Controller
     }
 
     /*------------------------------------Para Ajax-----------------------------*/
-    public static function ObtenerMeses()
+    public static function ObtenerMeses(Request $r)
     {
         $meses = collect([]);
-        $consulta = Reporte_mensual::where('año', '=', '2019')->get();
+        $consulta = Reporte_mensual::where('año', '=', $r->año)->get();
         if ($consulta->count()) {
             foreach ($consulta as $reporte) {
                 $meses[CalculosController::NumeroACadena($reporte->mes)] = $reporte->mes;
@@ -623,9 +624,8 @@ class CalculosController extends Controller
         if ($reportes->count()) {
             foreach ($reportes as $key => $r) {
                 $años[$key] = $key;
-
-                return $años;
             }
+            return $años;
         }
         else {
             return ['mensaje' => 'No se encontraron resultados'];

@@ -167,57 +167,23 @@
                         required="required" title="" onchange="MostrarInput()">
                     </div>
                   </div>
+                  <div class="form-group col-lg-4" style="margin-left: 30px;">
+                    <button type="button" class="btn btn-success btn-icon-split" style="margin-right: 10px;" onclick="VerificarReporte()" hidden="hidden" id="registrar_btn">
+                      <span class="icon text-white-50">
+                        <i class="fas fa-check"></i>
+                      </span>
+                      <span class="text">Registrar</span>
+                    </button>
+                  </div>
                 </div>
               </form>
                        
             </div>
             <hr>
-            <form method="GET" action="{{url('/RegistrarMensual')}}">
+            <form method="POST" action="{{url('/RegistrarMensual')}}" id="form_reporte_mensual">
               @csrf
 
-              <button type="submit" class="btn btn-primary">Submit</button>
-
               <input type="date" name="fecha_reg" id="fecha_reg" hidden="hidden">
-
-              <h2>Diesel</h2>
-              <div class="form-group form-inline">
-
-                <label>Buscar precio &nbsp;</label>
-                <select name="periodo" id="valores" class="form-control form-control-sm" onchange="ActualizarPrecio()">
-                            
-                </select>
-                <input type="text" name="diesel_id" hidden="hidden" id="diesel_id">
-                          &nbsp;&nbsp;
-
-                <label>costo: &nbsp;</label>
-                <input type="number" name="precio_diesel" id="precio" class="form-control form-control-sm" 
-                @if(Session::has('reporte11'))
-                  value="{{Session::get('reporte11')['Precio de Diesel (sin IVA) con % Incremento 2019']}}" 
-                @else
-                  value=""
-                @endif 
-                required="required" step="any">
-                &nbsp; &nbsp;
-
-                <label>iva: &nbsp;</label>
-                <input type="number" name="iva" id="iva" class="form-control form-control-sm" 
-                @if(Session::has('reporte11'))
-                  value="1.00" 
-                @else
-                  value=""
-                @endif 
-                required="required" step="any">
-                &nbsp; &nbsp;
-
-
-                <label>&nbsp;¿Aplicar iva? &nbsp;</label>
-                <label class="switch">
-                  <input type="checkbox" onclick="ApilcarIva()" value="">
-                  <span class="slider round"></span>
-                </label>
-
-              </div>
-              <hr>
 
   <!------------------------------------------Info General------------------------------------------->
 
@@ -229,7 +195,7 @@
                       @if($key)
                         <div class="form-group form-inline col-lg-6">
                           <label class="col-sm-5">{{$key}} &nbsp;</label>
-                          <input step="any" type="number" name="Info General[{{$key}}]" id="{{str_replace(' ', '', $key)}}" class="form-control form-control-sm" required="required" value="{{$valor}}" onkeyup="Porcentajes_CostoXKM()">
+                          <input step="any" type="number" name="Info General[{{$key}}]" id="{{str_replace(' ', '', $key)}}" class="form-control form-control-sm" required="required" value="{{round($valor, 2, PHP_ROUND_HALF_UP)}}" onkeyup="Porcentajes_CostoXKM()">
                           <br><br>
                         </div>
                       @endif
@@ -255,7 +221,7 @@
                         </thead>
                         <tbody>
                           @foreach($reporte as $key => $rep)
-                            @if($key)
+                            @if($key && $key != 'Total Costo Variable de Operación' && $key != 'Total Costo Variable de Mantenimiento' && $key != 'Total Incidencias Operativas' && $key != 'Total Costo Fijo de Operación' && $key != 'Total Costo Fijo de Administracion')
                               <tr>
                                 <td>{{$key}}</td>
                                 <td><input type="number" name="{{$key1}}[{{$key}}]" id="{{str_replace(' ', '', $key1)}}_{{str_replace(array('(', ')', ' ', '.', ','), array('', '', '', '', ''), $key)}}" class="form-control form-control-sm input-table" value="{{round($rep, 2, PHP_ROUND_HALF_UP)}}" onkeyup="Porcentajes_CostoXKM()" onclick="Porcentajes_CostoXKM()"></td>
@@ -269,7 +235,7 @@
                               <th>Total</th>
                               <th><input type="number" name="" id="{{str_replace(' ', '', $key1)}}_total" class="form-control form-control-sm input-table" value="" onkeyup="Porcentajes_CostoXKM()" onclick="Porcentajes_CostoXKM()" step="any"></th>
                               <th><output id="porcentaje">---</output></th>
-                              <th><output id="km">---</output></th>
+                              <th><output id="kms">---</output></th>
                             </tr>
                           @endif
                         </tbody>
@@ -303,17 +269,17 @@
                   @foreach(Session::get('resumen') as  $key1 => $resumen)
                     @if($key1 != 'Otros Gastos')
                       <tr>
-                        <th>{{$key1}}</th>
-                        <th><input type="number" name="Resumen_{{$key1}}[total]" id="total_{{str_replace(' ', '', $key1)}}" class="form-control form-control-sm input-table" value="" step="any" onkeyup=""></th>
-                        <th><output id="porcentaje">---</output></th>
-                        <th><output id="km">---</output></th>
+                        <th colspan="3">{{$key1}}</th>
+                        <th colspan="3"><input type="number" name="Resumen_{{$key1}}[total]" id="total_{{str_replace(' ', '', $key1)}}" class="form-control form-control-sm input-table" value="" step="any" onkeyup=""></th>
+                        <!--<th><output id="porcentaje">---</output></th>
+                        <th><output id="km">---</output></th>-->
                       </tr>
                       @foreach($resumen as $key2 => $res)
                         <tr>
-                          <td>{{$res->nombre}}</td>
-                          <td><input type="number" name="Resumen_{{$key1}}[{{$res->nombre}}]" id="{{str_replace(array('_', ' ', '.'), array('','', '_'), $key1.$res->nombre)}}" class="form-control form-control-sm input-table" value="0" step="any" onkeyup="SacarTotalesResumen()"></td>
-                          <td><output id="porcentaje">---</output></td>
-                          <td><output id="km">---</output></td>
+                          <td colspan="3">{{$res->nombre}}</td>
+                          <td colspan="3"><input type="number" name="Resumen_{{$key1}}[{{$res->nombre}}]" id="{{str_replace(array('_', ' ', '.'), array('','', '_'), $key1.$res->nombre)}}" class="form-control form-control-sm input-table" value="0" step="any" onkeyup="SacarTotalesResumen()"></td>
+                          <!--<td><output id="porcentaje">---</output></td>
+                          <td><output id="km">---</output></td>-->
                         </tr>
                       @endforeach
                     @endif
@@ -337,7 +303,6 @@
           <!-- Modal Header -->
           <div class="modal-header">
             <h4 class="modal-title" id="titulo_modal">Se encontraron nuevos datos</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
           </div>
           <!-- Modal body -->
           <div class="modal-body">
@@ -373,7 +338,7 @@
           </div>
           <!-- Modal footer -->
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary btn-icon-split" id="boton_cambiar" >
+            <button type="submit" class="btn btn-primary btn-icon-split" id="boton_cambiar" onclick="ActualizarDatos()">
               <span class="icon text-white-50">
                 <i class="fas fa-sync-alt" style="color: white"></i>
               </span>
@@ -397,6 +362,7 @@
     if ('{{Session::has('reporte')}}') {
       Porcentajes_CostoXKM();
       MandarFecha();
+      $('#registrar_btn').removeAttr('hidden');
     }
 
     $('#radioBtn a').on('click', function(){
@@ -408,6 +374,16 @@
       $('a[data-toggle="'+tog+'"][data-title="'+sel+'"]').removeClass('notActive').addClass('active');
     });
   });
+
+  function ActualizarDatos()
+  {
+    $('#modal_form').modal('toggle');
+    swal({
+      title: "Hecho!",
+      text: "Por favor vuelve a cargar el archivo",
+      type: 'warning',
+    });
+  }
 
   function Porcentajes_CostoXKM(){
     var total = $('#TotalIngreso').val();
@@ -421,12 +397,11 @@
         $('#'+el.id).parent('td').siblings('td').children('#km').text('$'+Math.ceil(el.value/kms*100)/100);
       });
     });
-
       CalcularResumen(datos);
-      CalcularTotales(datos);
+      CalcularTotales(datos, total, kms);
   }
 
-  function CalcularTotales(datos)
+  function CalcularTotales(datos, total, kms)
   {
     datos.each(function(index, el) {
       $('#'+el.id).each(function(index, el) {
@@ -437,6 +412,8 @@
           }
         });
         $('#'+el.id+'_total').val(sum);
+        $('#'+el.id+'_total').parent('th').siblings('th').children('#porcentaje').text(Math.ceil(sum/total*10000)/100+'%');
+        $('#'+el.id+'_total').parent('th').siblings('th').children('#kms').text('$'+Math.ceil(sum/kms*100)/100);
       });
     });
   }
@@ -453,7 +430,7 @@
       var arreglo = [];
       partes.each(function(index, el) {
         var llave = el.name.split('[', 2)[1].replace(']', '');
-        arreglo[llave] = el.value;
+        arreglo[llave.trim()] = el.value;
       });
       reporte[el.id] = arreglo;
     });  
@@ -468,16 +445,13 @@
 
       if(nom != 'Intereses' && nom != 'Arrendamientos' && (parseFloat(reporte[indice][item.nombre]) > 0 || parseFloat(reporte[indice][item.nombre]) < 0)) 
       {
-        valores[indice+nom.replace(/ /g, '')] += parseFloat(reporte[indice][item.nombre]); 
+        valores[indice+nom.replace(/ /g, '')] += parseFloat(reporte[indice][item.nombre]);
       }
       else if (nom == 'Intereses') {
-        valores[indice+nom.replace(/ /g, '')] += parseFloat(reporte['OtrosGastos']['Depreciaciones']);
+        valores[indice+nom.replace(/ /g, '')] += parseFloat(reporte['OtrosGastos']['Costo Financiero']);
       }
       else if (nom == 'Arrendamientos') {
-        console.log(reporte['OtrosGastos']['Depreciaciones']+reporte['CostoFijodeOperación']['Arrendamiento de unidades']);
-        console.log('---');
         valores[indice+nom.replace(/ /g, '')] = parseFloat(reporte['CostoFijodeOperación']['Arrendamiento de unidades']) + parseFloat(reporte['OtrosGastos']['Depreciaciones']);
-        console.log(valores[indice+nom.replace(/ /g, '')]);
       }
     });
     MostrarResumen(valores);
@@ -485,7 +459,6 @@
 
   function MostrarResumen(valores)
   {
-    console.log(valores);
     var inputs = $('#resumen input');
     inputs.each(function(index, el) {
       if (valores[el.id]) {
@@ -517,7 +490,7 @@
       },
       success: function(response){  
         $('#modal_añadir').modal('toggle');
-        console.log(response);
+        location.reload();
 
       },
       error: function(){
@@ -528,7 +501,7 @@
 
   function MostrarInput()
   {
-    console.log($('#fecha_archivo').val());
+    $('#registrar_btn').attr('hidden', 'hidden');
     if (flag) {
       $('#contenedor-excel').append('<label for="import"><img src="img/excel.ico" alt ="Click aquí para subir tu foto" title ="Click aquí para cargar archivo de excel" > </label><input name="import_file" id="import" type="file" onchange="SubmitFormulario()" />'); 
 
@@ -539,13 +512,80 @@
 
   function MandarFecha()
   {
-    console.log($('#fecha_archivo').val());
     $('#fecha_reg').val($('#fecha_archivo').val());
   }
 
   function SubmitFormulario()
   {
     $('#formfile').submit();
+  }
+
+  function SubmitReporte()
+  {
+    $.ajax({
+      url: $('#form_reporte_mensual').attr('action'),
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        _token: "{{ csrf_token() }}",
+        datos: $('#form_reporte_mensual').serialize(),
+      },
+      success: function(response){  
+        //location.reload();
+      },
+      error: function(){
+        swal("Algo salió mal", "", "danger");
+      }
+    });
+    //$('#form_reporte_mensual').submit();
+  }
+
+  function VerificarReporte()
+  {
+    $.ajax({
+      url: "{{url('/VerificarReporte')}}",
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        _token: "{{ csrf_token() }}",
+        datos: $('#fecha_reg').val(),
+      },
+      success: function(response){  
+        if (response.resultado) {
+          $('#form_reporte_mensual').attr('action', "{{url('/ActualizarReporte')}}");
+          swal({
+            title: "El registro de este mes ya existe",
+            text: "¿Deseas actualizarlo?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Confirmar",
+            cancelButtonText: "Cancelar",
+            closeOnConfirm: false,
+            closeOnCancel: false,
+            showLoaderOnConfirm: true
+          },
+          function(isConfirm) {
+            if (isConfirm) {
+              SubmitReporte();
+              setTimeout(function () {
+                swal("Actualizado!", "Se actualizaron los datos del mes", "success");
+              }, 3000);
+            } else {
+              swal("Actualización cancelada", 'Datos seguros', "error");
+            }
+          }); 
+        }
+        else {
+          $('#form_reporte_mensual').attr('action', "{{url('/RegistrarMensual')}}");
+          SubmitReporte();
+          swal("Hecho!", "Reporte mensual registrado con éxito", "success");
+        }
+      },
+      error: function(){
+        console.log('algo salio mal');
+      }
+    });
   }
 </script>
 @endsection

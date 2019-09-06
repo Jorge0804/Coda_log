@@ -3,9 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Usuario;
 
-class LoginCheck
+class UserCheck
 {
     /**
      * Handle an incoming request.
@@ -16,6 +15,6 @@ class LoginCheck
      */
     public function handle($request, Closure $next)
     {
-            return $next($request);
+        return $next($request);
     }
 }

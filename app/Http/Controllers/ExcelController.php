@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Excel;
 use App\Referencia;
 use App\Resumen;
+use App\Reporte_mensual;
 use Illuminate\Support\Facades\DB;
  
 class ExcelController extends Controller
@@ -15,6 +16,7 @@ class ExcelController extends Controller
 		$direccion = $r->file('import_file')->getRealPath();
     	$datos = Excel::selectSheets('ER18')->load($direccion, function($reader){})->get();	
     	$reporte = collect([]);
+        return $r;
 
     	foreach ($datos as $key => $fila) {
     		if($fila->estado_de_resultados == 'Total Ingreso' || $fila->estado_de_resultados == 'FLETES')
@@ -46,8 +48,8 @@ class ExcelController extends Controller
 
     public static function importar(Request $r)
     {
-    	$mesnum = explode('-', $r->fecha)[1];
-    	$mes = CalculosController::NumeroACadena($mesnum);
+        $array_fecha = explode('-', $r->fecha);
+    	$mes = CalculosController::NumeroACadena($array_fecha[1]);
     	$direccion = $r->file('import_file')->getRealPath();
     	$datos = Excel::selectSheets('Estado_resultados')->load($direccion, function($reader){})->get(array('encabezados','datos', $mes));
         $encabezado = "";

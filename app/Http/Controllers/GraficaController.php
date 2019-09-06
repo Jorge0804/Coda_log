@@ -18,7 +18,7 @@ class GraficaController extends Controller
     	foreach($cotis as $coti)
     	{
     		$datos->push([
-    			'name'=> 'fecha: '.$coti->fecha,
+    			'name'=> 'Cliente: '.$coti['cliente']['nombre'],
 	            'y' => $coti->flete,
 	       		'color' => sprintf('#%06X', mt_rand(0, 0xFFFFFF)),
 	            'sliced' => 'true',
@@ -30,7 +30,7 @@ class GraficaController extends Controller
 	    ])
 	    ->chart([
 	        'type'     => 'pie', 
-	        'renderTo' => 'contenedor', 
+	        'renderTo' => 'contenedor1', 
 	    ])
 	    ->subtitle([
 	        'text' => 'fletes mensuales',
@@ -79,7 +79,7 @@ class GraficaController extends Controller
 	    ])
 	    ->chart([
 	        'type'     => 'line', 
-	        'renderTo' => 'contenedor', 
+	        'renderTo' => 'contenedor2', 
 	    ])
 	    ->subtitle([
 	        'text' => 'Cantidad de ventas por dias',

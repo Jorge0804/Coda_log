@@ -189,17 +189,17 @@
       <div class="col-lg-7">
         <div class="card shadow mb-4">
           <!-- Card Header - Accordion -->
-          <a class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+          <a href="#coti-collapse" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="coti-collapse">
             <h6 class="m-0 font-weight-bold text-primary">Información de cotización</h6>
           </a>
           <!-- Card Content - Collapse -->
-          <div class="collapse show" id="collapseCardExample">
+          <div class="collapse show" id="coti-collapse">
             <div class="card-body">
               <div class="form-group form-inline">
                 <div class="form-group form-inline col-sm-4">
                   <label class="etiquetas" for="clientes">Clientes:</label>
                   &nbsp;
-                  <select style="font-size: 10px;" name="cliente" id="clientes" class="form-control form-control-sm">
+                  <select style="font-size: 10px;" name="cliente" id="clientes" class="form-control form-control-sm" required="required" onchange="CalcularIngreso()">
                     @foreach($datos['clientes'] as $cliente)
                       <option value="{{$cliente->id}}">{{$cliente->nombre}}</option>
                     @endforeach
@@ -227,7 +227,7 @@
               </div>
               <div class="form-group form-inline">
                 <div class="form-group">
-                  <div class="form-group col-sm-4">
+                  <div class="form-group col-sm-12">
                     <label class="etiquetas">Origen:</label>
                     &nbsp;
                     <div class="form-group form-inline">
@@ -245,7 +245,7 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <div class="form-group col-sm-4">
+                  <div class="form-group col-sm-12">
                     <label class="etiquetas">Destino:</label>
                     &nbsp;
                     <div class="form-group form-inline">
@@ -265,91 +265,114 @@
               </div>
               <hr>
                 <div class="form-group form-inline">
-                  <div class="col-sm-3 form-inline">
+                  <div class="col-sm-4 form-inline" hidden="hidden">
+                    <label class="etiquetas" for="mesactual">
+                      litro_diesel:
+                    </label>&nbsp;
+                    <input style="font-size: 10px;" type="number" name="litro_diesel" id="litro_diesel" class="form-control form-control-sm" value="" title="" step="any">
+                  </div>
+                  <div class="col-sm-4 form-inline">
                     <label class="etiquetas" for="mesactual">
                       Flete:
                     </label>&nbsp;
-                    <input style="font-size: 10px;" type="number" name="flete" id="flete" class="form-control form-control-sm" value="" required="required" title="" onkeyup="CalcularIngreso()" step="any">
+                    <input style="font-size: 10px;" type="number" name="flete" id="flete" class="form-control form-control-sm" value="" title="" onkeyup="CalcularIngreso()" step="any">
                   </div>
-                  <div class="col-sm-3 form-inline">
+                  <div class="col-sm-4 form-inline">
                     <label class="etiquetas" for="mesactual">
                       Pistas en un sentido:
                     </label>&nbsp;
                     <input style="font-size: 10px;" type="number" name="un_sentido" id="un_sentido" class="form-control form-control-sm" value="" required="required" 
                     onkeyup="if (data['resumen'] != undefined) {MostrarResumen(); }" step="any">
                   </div>
-                  <div class="form-group form-inline col-sm-3">
+                  <div class="form-group form-inline col-sm-4">
                     <label class="etiquetas" for="mesactual">
                       Rendimiento:
                     </label>&nbsp;
                     <input step="any" style="font-size: 10px;" type="number" name="rendimiento" id="rendimiento" class="form-control form-control-sm" value="" required="required" title="" onkeyup="CalcularLitrosDiesel()" step="any">
                   </div>
-                  <div class="col-sm-3 form-inline">
-                    <label class="etiquetas col-sm-11" for="mesactual">
+                  <div class="col-sm-4 form-inline">
+                    <label class="etiquetas" for="mesactual">
                       Presupuesto de viajes mensuales:
                     </label>&nbsp;
                     <input style="font-size: 10px;" type="number" name="presupuesto" id="presupuesto" class="form-control form-control-sm" value="" required="required" title="" onkeyup="CalcularIngreso()" step="any">
                   </div>
-                  <div class="col-sm-3 form-inline">
-                    <label class="etiquetas col-sm-11" for="mesactual">
+                  <div class="col-sm-4 form-inline">
+                    <label class="etiquetas" for="mesactual">
                       Kilometros en un sentido:
                     </label>&nbsp;
                     <input style="font-size: 10px;" type="number" name="km_uno" id="km_uno" class="form-control form-control-sm" value="" required="required" title="" onkeyup="CalcularRedondo()" step="any">
+                  </div>
+                  <div class="col-sm-4 form-inline" id="mostrarprecio" hidden="hidden">
+                    <label class="etiquetas" for="mesactual" style="color: blue;">
+                      Precio por kilometro
+                    </label>&nbsp;
+                    <input style="font-size: 10px; border-color: blue; color: blue;" type="number" name="precio_km" id="precio_km" class="form-control form-control-sm" value="0" required="required" title="" onkeyup="CalcularIngreso()" step="any">
+                  </div>
+                  <div class="col-sm-4 form-inline">
+                    <label class="etiquetas" for="mesactual" style="color: green;">
+                      Flete sugerido:
+                    </label>&nbsp;
+                    <input style="font-size: 10px; border-color: green; color: green; margin-right: 5px;" type="number" class="form-control form-control-sm" disabled="disabled" value="0" step="any" id="sugerido">
+                    <a class="btn btn-icon-split btn-sm" title="Usar sugerencia" style="cursor: pointer; background-color: green;" onclick="CambiarFlete()">
+                      <span class="icon text-white-50">
+                        <i class="fas fa-exchange-alt"style="color: white;"></i>
+                      </span>
+                    </a>
                   </div>
                 </div>
                 <hr>
 
 
                 <div class="form-group form-inline">
-                  <div class="form-group form-inline col-sm-3">
+                  <div class="form-group form-inline col-sm-4">
                     <label class="etiquetas" for="mesactual">
                       Kilometros redondos:
                     </label>&nbsp;
                     <input style="font-size: 10px;" type="number" name="km_redondo" id="km_redondo" class="form-control form-control-sm" value="" required="required" step="any">
                   </div>
-                  <div class="form-group form-inline col-sm-3">
-                    <label class="etiquetas col-sm-11" for="mesactual">
+                  <div class="form-group form-inline col-sm-4">
+                    <label class="etiquetas" for="mesactual">
                       Sueldo de operador por km:
                     </label>&nbsp;
-                    <input style="font-size: 10px;" type="number" name="sueldo_km" id="sueldo_km" class="form-control form-control-sm" value="" required="required" title="" step="any">
+                    <input style="font-size: 10px;" type="number" name="sueldo_km" id="sueldo_km" class="form-control form-control-sm" value="" required="required" title="" step="any" onkeyup="MostrarResumen()">
                   </div>
-                  <div class="col-sm-3 form-inline">
+                  <div class="col-sm-4 form-inline">
                     <label class="etiquetas" for="mesactual">
                       Costo por viaje:
                     </label>&nbsp;
                     <input style="font-size: 10px;" type="number" name="costo_viaje" id="costo_viaje" class="form-control form-control-sm" value="" required="required" title="" onchange="CalcularUtilidad()" step="any">
                   </div>
-                  <div class="form-group form-inline col-sm-3">
+                  <div class="form-group form-inline col-sm-4">
                     <label class="etiquetas" for="mesactual">
                       Utilidad por viaje:
                     </label>&nbsp;
                     <input style="font-size: 10px;" type="number" name="utilidad" id="utilidad" class="form-control form-control-sm" value="" required="required" title="" step="any">
                   </div>
-                  <div class="col-sm-3 form-inline">
+                  <div class="col-sm-4 form-inline">
                     <label class="etiquetas" for="mesactual">
                       Kilometros mensuales:
                     </label>&nbsp;
                     <input style="font-size: 10px;" type="number" name="km_mensuales" id="km_mensuales" class="form-control form-control-sm" value="" required="required" step="any" onkeyup="CalcularKmMensuales()">
                   </div>
-                  <div class="form-group form-inline col-sm-3">
+                  <div class="form-group form-inline col-sm-4">
                     <label class="etiquetas" for="mesactual">
                       Litros de diesel por viaje:
                     </label>&nbsp;
                     <input style="font-size: 10px;" type="number" name="litros_diesel" id="litros_diesel" class="form-control form-control-sm" value="" required="required" title="" step="any">
                   </div>
-                  <div class="col-sm-3 form-inline">
+                  <div class="col-sm-4 form-inline">
                     <label class="etiquetas" for="mesactual">
                       Venta por kilometro:
                     </label>&nbsp;
                     <input style="font-size: 10px;" type="number" name="venta_km" id="venta_km" class="form-control form-control-sm" value="" required="required" title="" step="any">
                   </div>
-                  <div class="form-group form-inline col-sm-3">
+                  <div class="form-group form-inline col-sm-4">
                     <label class="etiquetas" for="mesactual">
                       Costo por kilometro:
                     </label>&nbsp;
                     <input style="font-size: 10px;" type="number" name="costo_kilometro" id="costo_kilometro" class="form-control form-control-sm" value="" required="required" title="" step="any">
                   </div>
-                  <div class="form-group form-inline col-sm-3">
+                  <div class="form-group form-inline col-sm-4">
                     <label class="etiquetas" for="mesactual">
                       Utilidad por kilometro:
                     </label>&nbsp;
@@ -378,7 +401,7 @@
                   </div>
                 </div>
               </div>
-            </div>,
+            </div>
           </div>
         </div>
         <div class="col-lg-5">
@@ -424,46 +447,46 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <th colspan="2">Costo variable de operación</th>
+                        <th colspan="2" style="font-size: 12px;">Costo variable de operación</th>
                         <th colspan="2"><input type="number" step="any" name="cvo_total" id="cvo_total" class="form-control form-control-sm input-table"></th>
                         <th colspan="2"><label><i id="cvo_porcentaje">0%</i></label></th>
                       </tr>
                       <tr>
                         <td colspan="3">Diesel</td>
-                        <td colspan="3"><input type="number" step="any" name="diesel" id="diesel" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="diesel" id="diesel" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
                         <td colspan="3">Autopistas</td>
-                        <td colspan="3"><input type="number" step="any" name="autopistas" id="autopistas" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="autopistas" id="autopistas" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
                         <td colspan="3">Sueldo</td>
-                        <td colspan="3"><input type="number" step="any" name="sueldo" id="sueldo" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="sueldo" id="sueldo" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
                         <td colspan="3">Otros</td>
-                        <td colspan="3"><input type="number" step="any" name="cvo_otros" id="cvo_otros" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="cvo_otros" id="cvo_otros" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
-                        <th colspan="2">Costo fijo de operación</th>
+                        <th colspan="2" style="font-size: 12px;">Costo fijo de operación</th>
                         <th colspan="2"><input type="number" step="any" name="cfo_total" id="cfo_total" class="form-control form-control-sm input-table"></th>
                         <th colspan="2"><label><i id="cfo_porcentaje">0%</i></label></th>
                       </tr>
                       <tr>
                         <td colspan="3">Arrendamientos</td>
-                        <td colspan="3"><input type="number" step="any" name="arrendamientos" id="arrendamientos" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="arrendamientos" id="arrendamientos" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
                         <td colspan="3">Seguros</td>
-                        <td colspan="3"><input type="number" step="any" name="seguros" id="seguros" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="seguros" id="seguros" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
                         <td colspan="3">Carga social</td>
-                        <td colspan="3"><input type="number" step="any" name="carga_social" id="carga_social" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="carga_social" id="carga_social" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
                         <td colspan="3">Otros</td>
-                        <td colspan="3"><input type="number" step="any" name="cfo_otros" id="cfo_otros" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="cfo_otros" id="cfo_otros" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                     </tbody>
                   </table>
@@ -474,48 +497,48 @@
                     </thead>
                     <tbody>
                       <tr>
-                        <th colspan="2">Costo variable de mantenimiento</th>
+                        <th colspan="2" style="font-size: 12px;">Costo variable de mantenimiento</th>
                         <th colspan="2"><input type="number" step="any" name="cvm_total" id="cvm_total" class="form-control form-control-sm input-table"></th>
                         <th colspan="2"><label><i id="cvm_porcentaje">0%</i></label></th>
                       </tr>
                       <tr>
                         <td colspan="3">Refacciones y MO</td>
-                        <td colspan="3"><input type="number" step="any" name="refaccion_mo" id="refaccion_mo" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="refaccion_mo" id="refaccion_mo" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
                         <td colspan="3">Llantas</td>
-                        <td colspan="3"><input type="number" step="any" name="llantas" id="llantas" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="llantas" id="llantas" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
-                        <th colspan="2">Incidencias operativas</th>
+                        <th colspan="2" style="font-size: 12px;">Incidencias operativas</th>
                         <th colspan="2"><input type="number" step="any" name="io_total" id="io_total" class="form-control form-control-sm input-table"></th>
                         <th colspan="2"><label><i id="io_porcentaje">0%</i></label></th>
                       </tr>
                       <tr>
                         <td colspan="3">Deducibles y otros</td>
-                        <td colspan="3"><input type="number" step="any" name="deducibles_otros" id="deducibles_otros" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="deducibles_otros" id="deducibles_otros" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
-                        <th colspan="2">Costo fijo de administración</th>
+                        <th colspan="2" style="font-size: 12px;">Costo fijo de administración</th>
                         <th colspan="2"><input type="number" step="any" name="cfa_total" id="cfa_total" class="form-control form-control-sm input-table"></th>
                         <th colspan="2"><label><i id="cfa_porcentaje">0%</i></label></th>
                       </tr>
                       <tr>
                         <td colspan="3">Sueldos y salarios</td>
-                        <td colspan="3"><input type="number" step="any" name="sueldos_salarios" id="sueldos_salarios" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="sueldos_salarios" id="sueldos_salarios" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
                         <td colspan="3">Otros</td>
-                        <td colspan="3"><input type="number" step="any" name="cfa_otros" id="cfa_otros" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="cfa_otros" id="cfa_otros" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                       <tr>
-                        <th colspan="2">Costo integral financiero</th>
+                        <th colspan="2" style="font-size: 12px;">Costo integral financiero</th>
                         <th colspan="2"><input type="number" step="any" name="cif_total" id="cif_total" class="form-control form-control-sm input-table"></th>
                         <th colspan="2"><label><i id="cif_porcentaje">0%</i></label></th>
                       </tr>
                       <tr>
                         <td colspan="3">Intereses</td>
-                        <td colspan="3"><input type="number" step="any" name="intereses" id="intereses" class="form-control form-control-sm input-td"></td>
+                        <td colspan="3"><input type="number" step="any" name="intereses" id="intereses" class="form-control form-control-sm input-td" onkeyup="CalcularTotalesResumen()"></td>
                       </tr>
                     </tbody>
                   </table>
@@ -593,28 +616,23 @@
       if ($('#cvo_total').val()) {
         CalcularCostoXViaje();
       }
+      if($('#clientes').val() == 1){
+        CalcularExcepcion();
+      } 
     });
 
     function CalcularPorcentajes(){
       var ingresos = $('#ingresos_viaje').val();
       if ($('#cvo_total').val() && $('#ingresos_viaje').val()) {
-        $('#cvo_porcentaje').text((Math.ceil($('#cvo_total').val()/ingresos*100))+'%');
-        $('#cfo_porcentaje').text((Math.ceil($('#cfo_total').val()/ingresos*100))+'%');
-        $('#cvm_porcentaje').text((Math.ceil($('#cvm_total').val()/ingresos*100))+'%');
-        $('#cfa_porcentaje').text((Math.ceil($('#cfa_total').val()/ingresos*100))+'%');
-        $('#cif_porcentaje').text((Math.ceil($('#cif_total').val()/ingresos*100))+'%');
-        $('#io_porcentaje').text((Math.ceil($('#io_total').val()/ingresos*100))+'%');
+        $('#cvo_porcentaje').text(Math.ceil(($('#cvo_total').val()/ingresos*100)*100)/100+'%');
+        $('#cfo_porcentaje').text(Math.ceil(($('#cfo_total').val()/ingresos*100)*100)/100+'%');
+        $('#cvm_porcentaje').text(Math.ceil(($('#cvm_total').val()/ingresos*100)*100)/100+'%');
+        $('#cfa_porcentaje').text(Math.ceil(($('#cfa_total').val()/ingresos*100)*100)/100+'%');
+        $('#cif_porcentaje').text(Math.ceil($('#cif_total').val()/ingresos*100)+'%');
+        $('#io_porcentaje').text(Math.ceil(($('#io_total').val()/ingresos*100)*100)/100+'%');
 
         $('#utilidad_operacion').val(Math.ceil(($('#ingresos_viaje').val()-$('#cvo_total').val()-$('#cfo_total').val()-$('#cvm_total').val()-$('#cfa_total').val()-$('#cif_total').val()-$('#io_total').val())*100)/100);
-        console.log('-------------------------------------------------');
-        console.log($('#ingresos_viaje').val());
-        console.log($('#cvo_total').val());
-        console.log($('#cfo_total').val());
-        console.log($('#cvm_total').val());
-        console.log($('#cfa_total').val());
-        console.log($('#cif_total').val());
-        console.log($('#io_total').val());
-        $('#utilidad_porcentaje').text((Math.ceil($('#utilidad_operacion').val()/ingresos*100))+'%');
+        $('#utilidad_porcentaje').text(Math.ceil(($('#utilidad_operacion').val()/ingresos*100)*100)/100+'%');
       }
       else {
         $('#cvo_porcentaje').text('0%');
@@ -633,7 +651,9 @@
 
     function CargarCiudades(estado, punto)
     {
+      console.log($('#estado_origen').val());
       var ciudades = JSON.parse(estado.val()).ciudades;
+      console.log(ciudades);
 
       if (punto == 'origen') {
         $('#ciudad_origen').empty();
@@ -797,6 +817,7 @@
           dataType: 'json',
           data: {
             _token: "{{ csrf_token() }}",
+            año: $('#anual_in').val()
           },
           success: function(respuesta){
             if (!respuesta['mensaje']) {
@@ -841,21 +862,59 @@
             _token: "{{ csrf_token() }}",
             datos: $('#modal_form').serialize(),
           },
-          success: function(response){    
-            if (response['cliente'] != undefined) {
-              $('#clientes').append('<option value="'+response['cliente'].id+'">'+response['cliente'].nombre+'</option>');
+          success: function(response){ 
+            $('#modal_añadir').modal('toggle');
+            console.log(response);
 
-              $('#clientes').val(response['cliente'].id);
+            if (response['dato'] == 'cliente') {
+              if (response['tipo'] == 'registrado') {
+                swal({
+                  title: 'Exitoso!',
+                  text: response['mensaje'],
+                  type: "success",
+                  position: 'top-end',
+                  timer: 1200
+                });
+                $('#clientes').append('<option value="'+response['cliente'].id+'" selected>'+response['cliente'].nombre+'</option>');
+              }
+              else {
+                swal({
+                  title: 'Error!',
+                  text: response['mensaje'],
+                  type: "error",
+                  position: 'top-end',
+                  timer: 2500
+                });
+              }
             }
-            else if(response['ciudad'] != undefined){
+            else if (response['dato'] == 'ciudad') {
+              if (response['tipo'] == 'registrado') {
+                swal({
+                  title: 'Exitoso!',
+                  text: response['mensaje'],
+                  type: "success",
+                  position: 'top-end',
+                  timer: 1500
+                });
+                location.reload();
+              }
+              else {
+                swal({
+                  title: 'Error!',
+                  text: response['mensaje'],
+                  type: "error",
+                  position: 'top-end',
+                  timer: 2500
+                });
+              }
+            }
+            if(response['ciudad'] != undefined){
               if (response['estado'] != undefined) {
-                var est = JSON.parse(response['estado']);
-                $('#estado_origen').append('<option value="'+response['estado']+'">'+est.nombre+'</option>');
-
-                //$('#estado_origen').val(response['estado']);
+                $('#estado_origen').append('<option value="'+response['estado']+'">'+response['estado'].nombre+'</option>');
               }
               else {
                 $('#estado_origen').val(response['ciudad'].estado);
+                //location.reload();
               }
             }
           },
@@ -873,14 +932,25 @@
             _token: "{{ csrf_token() }}",
             datos: $('#modal_form').serialize(),
           },
-          success: function(response){   
-            console.log(response);
+          success: function(response){ 
+          console.log(response);  
             data['resumen'] = response;
-
             MostrarResumen();
+            $('#modal_añadir').modal('toggle');
+            swal({
+              title: "Se cargaron los datos",
+              type: "success",
+              position: 'top-end',
+              timer: 1500
+            });
           },
           error: function(){
-            console.log('algo salio mal');
+            swal({
+              title: "Algo salió mal",
+              type: "danger",
+              position: 'top-end',
+              timer: 1000
+            });
           }
         });
       }
@@ -889,33 +959,42 @@
     function MostrarResumen()
     {
       var resumen = data['resumen'];
+      console.log(resumen);
       $('#diesel').val(Math.ceil($('#litros_diesel').val()*$('#presupuesto').val()*resumen.precio_diesel));
 
       $('#autopistas').val(Math.ceil($('#un_sentido').val()*$('#presupuesto').val()*resumen.incremento_casetas*$('#select_tipo').val()*100)/100);
 
       $('#sueldo').val(Math.ceil($('#km_redondo').val()*$('#sueldo_km').val()*$('#presupuesto').val()*100)/100);
       $('#cvo_otros').val(Math.ceil(resumen.cvo_otros/resumen.unidades_operativas*100)/100);
-      $('#cvo_total').val(Math.ceil((parseFloat($('#diesel').val())+parseFloat($('#autopistas').val())+parseFloat($('#sueldo').val())+parseFloat($('#cvo_otros').val()))*100)/100);
 
       $('#refaccion_mo').val(Math.ceil(resumen.refaccion_mo/resumen.unidades_operativas*100)/100);
       $('#llantas').val(Math.ceil(resumen.llantas/resumen.unidades_operativas*100)/100);
       //$('#cvm_total').val($('#refaccion_mo').val()+$('#llantas').val());
-      $('#cvm_total').val(Math.ceil((parseFloat($('#refaccion_mo').val())+parseFloat($('#llantas').val()))*100)/100);
 
       $('#deducibles_otros').val(Math.ceil(resumen.deducibles_otros/resumen.unidades_operativas*100)/100);
-      $('#io_total').val(Math.ceil(($('#deducibles_otros').val())*100)/100);
 
       $('#arrendamientos').val(Math.ceil(resumen.arrendamientos/resumen.unidades_pagadas*100)/100);
       $('#seguros').val(Math.ceil(resumen.seguros/resumen.unidades_operativas*100)/100);
       $('#carga_social').val(Math.ceil(resumen.carga_social/resumen.unidades_operativas*100)/100);
       $('#cfo_otros').val(Math.ceil(resumen.cfo_otros/resumen.unidades_operativas*100)/100);
-      $('#cfo_total').val(Math.ceil((parseFloat($('#arrendamientos').val())+parseFloat($('#seguros').val())+parseFloat($('#carga_social').val())+parseFloat($('#cfo_otros').val()))*100)/100);
 
       $('#sueldos_salarios').val(Math.ceil(resumen.sueldos_salarios/resumen.unidades_operativas*100)/100);
       $('#cfa_otros').val(Math.ceil(resumen.cfa_otros/resumen.unidades_operativas*100)/100);
-      $('#cfa_total').val(Math.ceil((parseFloat($('#sueldos_salarios').val())+parseFloat($('#cfa_otros').val()))*100)/100);
 
-      $('#intereses').val(Math.ceil(resumen.intereses/resumen.unidades_pagadas*100)/100);
+      $('#intereses').val(Math.ceil((resumen.intereses/resumen.unidades_pagadas)*100)/100);
+
+      $('#litro_diesel').val(Math.ceil(resumen.precio_diesel*100)/100);
+
+      CalcularTotalesResumen();
+    }
+
+    function CalcularTotalesResumen()
+    {
+      $('#cvo_total').val(Math.ceil((parseFloat($('#diesel').val())+parseFloat($('#autopistas').val())+parseFloat($('#sueldo').val())+parseFloat($('#cvo_otros').val()))*100)/100);
+      $('#cvm_total').val(Math.ceil((parseFloat($('#refaccion_mo').val())+parseFloat($('#llantas').val()))*100)/100);
+      $('#io_total').val(Math.ceil(($('#deducibles_otros').val())*100)/100);
+      $('#cfo_total').val(Math.ceil((parseFloat($('#arrendamientos').val())+parseFloat($('#seguros').val())+parseFloat($('#carga_social').val())+parseFloat($('#cfo_otros').val()))*100)/100);
+      $('#cfa_total').val(Math.ceil((parseFloat($('#sueldos_salarios').val())+parseFloat($('#cfa_otros').val()))*100)/100);
       $('#cif_total').val(Math.ceil($('#intereses').val()*100)/100);
 
       CalcularPorcentajes();
@@ -923,14 +1002,22 @@
       CalcularUtilidadXKilometro();
       CalcularCostoXKilometro();
       CalcularGanancia();
+      CalcularUtilidad();
     }
 
     //Calculos para cotizacion
 
     function CalcularIngreso()
     {
-      $('#ingresos_viaje').val(Math.ceil($('#flete').val()*$('#presupuesto').val()));
+      if ($('#clientes').val() != 1) {
+        $('#precio_km').val(0);
+        $('#mostrarprecio').attr('hidden', 'hidden');
+      }
+      else {
+        CalcularExcepcion();
+      }
 
+      $('#ingresos_viaje').val(Math.ceil($('#flete').val()*$('#presupuesto').val()));
       CalcularCostoXViaje();
       CalcularUtilidad();
       CalcularKmMensuales();
@@ -943,9 +1030,19 @@
       }
     }
 
+    function CalcularExcepcion()
+    {
+      $('#mostrarprecio').removeAttr('hidden');
+      $('#flete').val(Math.ceil($('#km_redondo').val()*$('#precio_km').val()));
+    }
+
     function CalcularRedondo()
     {
       $('#km_redondo').val($('#km_uno').val()*$('#select_tipo').val());
+      if($('#clientes').val() == 1){
+        CalcularExcepcion();
+      } 
+      CalcularIngreso();
       CalcularKmMensuales();
       CalcularLitrosDiesel();
       CalcularVentaXKilometro();
@@ -958,7 +1055,7 @@
 
     function CalcularSueldoXKm()
     {
-      if (JSON.parse($('#select_config').val()).configuracion == 'Sencillo') {     
+      if ($('#select_config').val() == 1) {     
         $('#sueldo_km').val(1.90);
       }
       else {
@@ -979,7 +1076,7 @@
 
     function CalcularUtilidad()
     {
-      $('#utilidad').val(Math.ceil($('#flete').val()-$('#costo_viaje').val()*100)/100);
+      $('#utilidad').val(Math.ceil(($('#flete').val()-$('#costo_viaje').val())*100)/100);
 
       CalcularCostoXKilometro();
     }
@@ -1015,17 +1112,19 @@
 
     function CalcularGanancia()
     {
-      var porcentaje = Math.ceil($('#utilidad_operacion').val()/$('#ingresos_viaje').val()*100);
+      var porcentaje = Math.ceil(($('#utilidad_operacion').val()/$('#ingresos_viaje').val()*100)*100)/100;
+      var faltante = Math.ceil((parseFloat($('#porcentaje_minimo').val()) - porcentaje)*100)/100;
 
       if (($('#utilidad_operacion').val() != 0) && ($('#ingresos_viaje').val() != 0) && ($('#porcentaje_minimo').val() != 0)) {
-        if (porcentaje > $('#porcentaje_minimo').val()) {
+        if (porcentaje >= $('#porcentaje_minimo').val()) {
           if (!$('#alert_ganancia').hasClass('alert-success')) {
             $('#alert_ganancia').removeClass('alert-danger');
             $('#alert_ganancia').addClass('alert-success');
           }
+
           $('#alert_ganancia').empty();
-          $('#alert_ganancia').append('<i class="fas fa-check-circle"></i> <strong>Ganancia aceptable <i>(<strong id="ganancia">'+porcentaje+'</strong>%)</i></strong><input name="status" value="Aceptable" hidden="hidden">'); 
-          $('#ganancia').val('+'+porcentaje);
+          $('#alert_ganancia').append('<i class="fas fa-check-circle"></i> <strong>Ganancia aceptable <i>(<strong id="ganancia">+'+(faltante*-1)+'</strong>%)</i></strong><input name="status" value="Aceptable" hidden="hidden">'); 
+          $('#ganancia').val('+'+(faltante*-1));
         }
         else {
           if (!$('#alert_ganancia').hasClass('alert-danger')) {
@@ -1033,11 +1132,25 @@
             $('#alert_ganancia').addClass('alert-danger');
           }
           $('#alert_ganancia').empty();
-          $('#alert_ganancia').append('<i class="fas fa-exclamation-circle"></i> <strong>Ganancia no aceptable <i>(<strong id="ganancia">'+porcentaje+'</strong>%)</i></strong><input name="status" value="No aceptable" hidden="hidden">'); 
-          $('#ganancia').val('+'+porcentaje);
+
+          $('#alert_ganancia').append('<i class="fas fa-exclamation-circle"></i> <strong>Ganancia no aceptable <i>(<strong id="ganancia">-'+faltante+'</strong>%)</i></strong><input name="status" value="No aceptable" hidden="hidden">'); 
+          $('#ganancia').val('-'+faltante);
         }
         $('#alert_ganancia').removeAttr('hidden');
       }
+
+      CalcularFleteSugerido();
+    }
+
+    function CalcularFleteSugerido()
+    {
+      $('#sugerido').val(Math.ceil((parseFloat($('#utilidad_operacion').val())/parseFloat(($('#porcentaje_minimo').val())/100))/parseFloat($('#presupuesto').val())*100)/100);
+    }
+
+    function CambiarFlete()
+    {
+      $('#flete').val($('#sugerido').val());
+      CalcularIngreso();
     }
   </script>
 @endsection

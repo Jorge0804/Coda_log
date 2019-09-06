@@ -1,40 +1,30 @@
 @extends('vistas.base')
 
 @section('contenido')
-<button type="button" class="btn btn-danger btn-sm delete"><i class="la la-small la-trash"></i></button>
-  <script type="text/javascript">
-$('.delete').on('click', function() {
+  <a type="button" class="btn btn-success" href="{{url('/boton')}}">button</a>
+@endsection
 
-        swal({
-          title: "¿Desea eliminar el usuario?",
-          text: "",
-          type: "warning",
-          showCancelButton: true,
-          confirmButtonClass: "btn-danger",
-          confirmButtonText: "Si!!",
-          cancelButtonText: "No!!",
-          closeOnConfirm: false,
-          closeOnCancel: false
-        },
-        function(isConfirm) {
-          if (isConfirm) {
-
-            swal({
-                title:'¡El usuario será eliminado!',
-                text: '',
-                type: 'success'
-            }, 
-            function() {
-              $("#myform").submit();
-            });
-
-          } else {
-
-            swal("Cancelled", "El usuario no será eliminado!!", "error");
-
-          }
-        });
-
-    })
-  </script>
+@section('librerias')
+	<script type="text/javascript">
+		function Mensaje(){
+			swal({
+			  title: "Are you sure?",
+			  text: "You will not be able to recover this imaginary file!",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonClass: "btn-danger",
+			  confirmButtonText: "Yes, delete it!",
+			  cancelButtonText: "No, cancel plx!",
+			  closeOnConfirm: false,
+			  closeOnCancel: false
+			},
+			function(isConfirm) {
+			  if (isConfirm) {
+			    swal("Deleted!", "Your imaginary file has been deleted.", "success");
+			  } else {
+			    swal("Cancelled", "Your imaginary file is safe :)", "error");
+			  }
+			});			
+		}
+	</script>
 @endsection

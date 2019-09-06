@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Usuario;
 use App\CIF_mensual;
 use App\Cliente;
 use App\Periodo;
@@ -30,6 +31,7 @@ use App\Camion;
 use App\Resumen;
 use App\Referencia;
 use App\Otros_gastos;
+use Alert;
 
 class CotizacionController extends Controller
 {
@@ -44,10 +46,41 @@ class CotizacionController extends Controller
       return $diesel;
     } */
 
+    function MostrarCotizaciones()
+    {
+        $cotis = Cotizacion::all();
+
+        foreach ($cotis as $coti) {
+            $ciudad_origen = Ciudad::find($coti['ruta']['ciudad_origen']);
+            $ciudad_destino = Ciudad::find($coti['ruta']['ciudad_destino']);
+
+            $ciudad_origen['estado'] = Estado::find($ciudad_origen['estado']);
+            $coti['ruta']['ciudad_origen'] = $ciudad_origen;
+
+            $ciudad_destino['estado'] = Estado::find($ciudad_destino['estado']);
+            $coti['ruta']['ciudad_destino'] = $ciudad_destino;
+
+            $coti['camion']['tipo_configuracion'] = Tipo_configuracion::where('id', '=', $coti->camion->id)->first();
+        }
+        return view('cotizaciones.registrados', compact('cotis'));
+    }
+
     function FormrRegistrarMensual()
     {
       //$diesel = CotizacionController::ObtenerDiesel();
-    	return view('cotizaciones.registrar'/*, compact('diesel')*/);
+      if (count(Usuario::all())) {
+        if (session('usuario')) {
+          if (session('usuario')->rol == 1) {
+            return view('cotizaciones.registrar'/*, compact('diesel')*/);
+          } 
+          elseif (session('usuario')->rol == 2) {
+            return redirect('/FormCotizar');
+          }
+          return redirect('/CotiRegistradas');
+        }
+        return redirect('/');
+      }
+      return redirect('/FormRegistro');
     }
 
     function SacarResumenMensual(Request $r)
@@ -126,6 +159,7 @@ class CotizacionController extends Controller
       $coti->cfo_id = $cfo->id;
       $coti->cfa_id = $cfa->id;
       $coti->cf_id = $cf->id;
+      $coti->usuario_id = session('usuario')->id;
       if ($datos->tipo == 1) {
         $coti->tipo = 'Un sentido';
       }
@@ -134,6 +168,8 @@ class CotizacionController extends Controller
       }
       $coti->camion_id = Camion::where('tipo_configuracion', '=', $datos->tipo)->first()->id;
       $coti->flete = $datos->flete;
+      $coti->precio_km = $datos->precio_km;
+      $coti->litro_diesel = $datos->litro_diesel;
       $coti->estado = $datos->status;
       $coti->kilometros_ida = $datos->km_uno;
       $coti->presupuesto_viajes = $datos->presupuesto;
@@ -152,11 +188,18 @@ class CotizacionController extends Controller
       $coti->utilidad_operativa = $datos->utilidad_operacion;
       $coti->save();
 
-      return view('cotizaciones.registrados');
+      return back();
     }
 
-    function RegistrarMensual(Request $r)
+    function VerificarReporte(Request $r)
+    {
+      $array_fecha = explode('-', $r->datos);
+      return ['resultado' => Reporte_mensual::where('año', '=', $array_fecha[0])->where('mes', '=', $array_fecha[1])->get()->count()];
+    }
+
+    function RegistrarMensual(Request $res)
     { 
+      parse_str($res->datos, $r);
       $cf = new CF();
       $info = new Info_general();
       $cfa = new  CFA();
@@ -250,18 +293,108 @@ class CotizacionController extends Controller
       $rep->cfa = $cfa->id;
       $rep->cf = $cf->id;
       $rep->info_general = $info->id;
-      $fecha = explode('-', $r->fecha_reg);
+      $fecha = explode('-', $r['fecha_reg']);
       $rep->mes = $fecha[1];
       $rep->año = $fecha[0];
       $rep->save();
-      return view('cotizaciones.cotizar');
+      return ['accion' => 'Nuevo'];
+    }
+
+    function ActualizarReporte(Request $res)
+    {
+      parse_str($res->datos, $r);
+      $array_fecha = explode('-', $r['fecha_reg']);
+      $existente = Reporte_mensual::where('año', '=', $array_fecha[0])->where('mes', '=', $array_fecha[1])->first();
+
+      $cf = CF::find($existente->cf);
+      $info = Info_general::find($existente->info_general);
+      $cfa = CFA::find($existente->cfa);
+      $cfa_mensual = CFA_mensual::find($existente->cfa_mensual);
+      $cfo = CFO::find($existente->cfo);
+      $cfo_mensual = CFO_mensual::find($existente->cfo_mensual);
+      $cvm = CVM::find($existente->cvm);
+      $cvm_mensual = CVM_mensual::find($existente->cvm_mensual);
+      $cvo = CVO::find($existente->cvo);
+      $cvo_mensual = CVO_mensual::find($existente->cvo_mensual);
+      $io = IO::find($existente->io_resumen);
+      $cif_mensual = cif_mensual::find($existente->cif_mensual);
+      $IO_mensual = IO_mensual::find($existente->io_mensual);
+      $otros = Otros_gastos::find($existente->otros_gastos);
+
+      foreach ($r['Costo_Variable_de_Operación'] as $key => $value) {
+        $cvo_mensual[trim($key)] = $value;
+      }
+      $cvo_mensual->update();
+      foreach ($r['Costo_Variable_de_Mantenimiento'] as $key => $value) {
+        $cvm_mensual[trim($key)] = $value;
+      }
+      $cvm_mensual->update();
+      foreach ($r['Incidencias_Operativas'] as $key => $value) {
+        $IO_mensual[trim($key)] = $value;
+      }
+      $IO_mensual->update();
+      foreach ($r['Info_General'] as $key => $value) {
+        $info[trim($key)] = $value;
+      }
+      $info->update();
+      foreach ($r['Costo_Fijo_de_Operación'] as $key => $value) {
+        $cfo_mensual[trim($key)] = $value;
+      }
+      $cfo_mensual->update();
+      foreach ($r['Costo_Fijo_de_Administracion'] as $key => $value) {
+        $cfa_mensual[trim($key)] = $value;
+      }
+      $cfa_mensual->update();
+      foreach ($r['Otros_Gastos'] as $key => $value) {
+        $otros[trim($key)] = $value;
+      }
+      $otros->update();
+      $cif_mensual->intereses = $r['Otros_Gastos']['Costo Financiero'];
+      $cif_mensual->update();
+
+      $cvo->costo = $r['Resumen_Costo_Variable_de_Operación']['total'];
+      $cvo->total_costo_diesel = $r['Resumen_Costo_Variable_de_Operación']['Diesel'];
+      $cvo->costo_autopistas = $r['Resumen_Costo_Variable_de_Operación']['Autopistas'];
+      $cvo->sueldo = $r['Resumen_Costo_Variable_de_Operación']['Sueldo'];
+      $cvo->otros = $r['Resumen_Costo_Variable_de_Operación']['Otros'];
+      $cvo->update();
+
+      $cvm->costo = $r['Resumen_Costo_Variable_de_Mantenimiento']['total'];
+      $cvm->refaccion_MO = $r['Resumen_Costo_Variable_de_Mantenimiento']['Refacciones y MO'];
+      $cvm->llantas = $r['Resumen_Costo_Variable_de_Mantenimiento']['Llantas'];
+      $cvm->update();
+
+      $io->costo = $r['Resumen_Incidencias_Operativas']['total'];
+      $io->deducibles_otros = $r['Resumen_Incidencias_Operativas']['Deducibles y Otros'];
+      $io->update();
+
+      $cfo->costo = $r['Resumen_Costo_Fijo_de_Operación']['total'];
+      $cfo->arrendamientos = $r['Resumen_Costo_Fijo_de_Operación']['Arrendamientos'];
+      $cfo->seguros = $r['Resumen_Costo_Fijo_de_Operación']['Seguros'];
+      $cfo->carga_social = $r['Resumen_Costo_Fijo_de_Operación']['Carga Social']; 
+      $cfo->otros = $r['Resumen_Costo_Fijo_de_Operación']['Otros'];
+      $cfo->update();
+
+      $cfa->costo = $r['Resumen_Costo_Fijo_de_Administracion']['total'];
+      $cfa->sueldos = $r['Resumen_Costo_Fijo_de_Administracion']['Sueldos y Salarios'];
+      $cfa->otros = $r['Resumen_Costo_Fijo_de_Administracion']['Otros'];
+      $cfa->update();
+
+      $cf->costo = $r['Resumen_Costo_Integral_del_Financiamiento']['total'];
+      $cf->intereses = $r['Resumen_Costo_Integral_del_Financiamiento']['Intereses'];
+      $cf->update();
+
+      $fecha = explode('-', $r['fecha_reg']);
+      $existente->mes = $fecha[1];
+      $existente->año = $fecha[0];
+      $existente->update();
+      return ['accion' => 'Actualizado']; 
     }
 
     function FormCotizar()
     {
-      $clientes = Cliente::all();
-      $ciudades = Ciudad::with('estado')->get();
-      $estados = Estado::with('ciudades')->get();
+      $clientes = Cliente::orderby('nombre')->get();
+      $estados = Estado::with('ciudades')->orderby('nombre')->get();
       $configuraciones = Tipo_configuracion::all();
 
       $datos = [
@@ -269,7 +402,16 @@ class CotizacionController extends Controller
         'estados'=>$estados,
         'configuraciones'=>$configuraciones
       ];
-      return view('cotizaciones.cotizar', compact('datos'));
+      if (count(Usuario::all())) {
+       if (session('usuario')) {
+         if (session('usuario')->rol != 3) {
+          return view('cotizaciones.cotizar', compact('datos'));
+        } 
+        return redirect('/CotiRegistradas');
+       }
+       return redirect('/');
+      }
+      return redirect('/FormRegistro');
     }
 
     //Funciones de registro
@@ -290,11 +432,17 @@ class CotizacionController extends Controller
         $cliente->save();
 
         return [
-          'mensaje' => 'El cliente ha sido registrado con éxito',
-          'cliente' => $cliente
+          'mensaje' => $cliente->nombre.' ha sido registrado con éxito',
+          'cliente' => $cliente,
+          'dato' => 'cliente',
+          'tipo' => 'registrado'
         ];
       }
-      return ['mensaje' => 'Este cliente ya existe'];
+      return [
+        'mensaje' => 'Este cliente ya existe',
+        'dato' => 'cliente', 
+        'tipo' => 'repetido'
+      ];
     }
 
     /*function AgregarConfiguracion(Request $datos)
@@ -338,7 +486,11 @@ class CotizacionController extends Controller
           $est_nuevo = true;
         }
         else {
-          return ['repetido' => 'Este estado ya existe'];
+          return [
+            'tipo' => 'repetido',
+            'mensaje' => 'Este estado ya existe',
+            'dato' => 'ciudad'
+          ];
         }
       }
       else {
@@ -361,18 +513,33 @@ class CotizacionController extends Controller
 
         if ($est_nuevo) {
           return [
-            'mensaje' => ' registrado',
+            'tipo' => 'registrado',
+            'mensaje' => 'El registro del estado y la ciudad fue exitoso',
             'ciudad' => $ciudad,
-            'estado' => json_encode(Estado::where('id', '=', $id_estado)->with('ciudades')->first()),
+            'estados' => json_encode(Estado::with('ciudades')->get()),
+            'dato' => 'ciudad'
           ];
         } 
         else {
           return [
-            'mensaje' => ' registrado',
+            'tipo' => 'registrado',
+            'mensaje' => 'La ciudad de '.$ciudad->nombre.' ha sido registrada',
             'ciudad' => $ciudad,
+            'dato' => 'ciudad'
           ];
         }
       }
-      return ['mensaje' => 'La ciudad de '.$data['ciudad'].' ya está registrada para este estado'];
+      return [
+        'tipo' => 'repetido',
+        'mensaje' => 'La ciudad de '.$data['ciudad'].' ya está registrada para este estado',
+        'dato' => 'ciudad'
+      ];
+    }
+
+    function EliminarCotización(Request $r)
+    {
+      Cotizacion::destroy($r->folio);
+
+      return ['mensaje' => 'Cotización elminada'];
     }
 }	

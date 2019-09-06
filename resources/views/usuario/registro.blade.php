@@ -28,32 +28,21 @@
       <div class="card-body p-0">
         <!-- Nested Row within Card Body -->
         <div class="row">
-          <div class="col-lg-5 d-none d-lg-block" style="background-image: url('img/registro.jpg');"></div>
+          <div class="col-lg-5 d-none d-lg-block" style="background-image: url('img/registroV2.jpg');"></div>
           <div class="col-lg-7">
             <div class="p-5">
               <div class="text-center">
-                <h1 class="h4 text-gray-900 mb-4">Registrar una nueva cuentas</h1>
+                <h1 class="h4 text-gray-900 mb-4">Registrar una nueva cuenta</h1>
               </div>
-              <form class="user" method="POST" action="{{ url('/Registrar') }}">
+              <form class="user" method="POST" action="{{ url('/RegPrimerUsuario') }}">
                  {{csrf_field()}}
                 <div class="form-group row">
                   <div class="col-sm-7 mb-5 mb-sm-0">
                     <input type="text" class="form-control form-control-user" id="exampleFirstName" placeholder="Nombre(s)" name="nombre" required="true">
                   </div>
-                  <div class="col-sm-5 mb-5 mb-sm-0">
-                    <input type="text" class="form-control form-control-user" placeholder="Telefono" name="telefono">
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <div class="col-sm-6 mb-3 mb-sm-0">
-                    <input type="text" class="form-control form-control-user" id="exampleFirstName" placeholder="Apellido paterno" name="paterno" required="true">
-                  </div>
-                  <div class="col-sm-6">
-                    <input type="text" class="form-control form-control-user" id="exampleLastName" placeholder="Apellido materno" name="materno">
-                  </div>
                 </div>
                 <div class="form-group">
-                  <input type="email" class="form-control form-control-user" id="exampleInputEmail" placeholder="Correo" name="correo" required="true">
+                  <input type="email" class="form-control form-control-user" id="exampleInputEmail" placeholder="Correo o nombre de usuario" name="correo" required="true">
                 </div>
                 <div class="form-group row">
                   <div class="col-sm-6 mb-3 mb-sm-0">
@@ -67,16 +56,18 @@
                   Registrar cuenta
                 </button>
               </form>
-              <hr>
-              <div class="text-center">
-                <a class="small" href="forgot-password.html">¿Olvidaste tu contraseña?</a>
-              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
+    @if (Session::has("mensaje"))
+      <br>
+      <div class="alert alert-danger animated bounceInup" role="alert">
+        <i class="fas fa-exclamation-circle fw"></i>
+        <strong>{{Session::get("mensaje")}}</strong>
+      </div>
+    @endif
   </div>
 
   <!-- Bootstrap core JavaScript-->

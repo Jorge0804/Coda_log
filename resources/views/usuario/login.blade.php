@@ -42,7 +42,7 @@
                   <form class="user" action="{{url('/Iniciar')}}" method="POST">
                     {{csrf_field()}}
                     <div class="form-group">
-                      <input type="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Ingresa tu nombre de usuario" name="user" required="true">
+                      <input type="text" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Ingresa tu nombre de usuario" name="user" required="true">
                     </div>
                     <div class="form-group">
                       <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Escribe tu contrseña" name="pass" required="true">
@@ -51,10 +51,6 @@
                       Login
                     </button>
                   </form>
-                  <hr>
-                  <div class="text-center">
-                    <a class="small" href="forgot-password.html">Forgot Password?</a>
-                  </div>
                 </div>
               </div>
             </div>

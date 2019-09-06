@@ -32,28 +32,10 @@ class Controller extends BaseController
 
     function graficas()
     {
-        $grafica = GraficaController::Gpay(Cotizacion::all());
-        return view('grafica', compact('grafica'));
-    }
-
-    function vercoti()
-    {
-        $cotis = Cotizacion::with('camion')->with('cliente')->with('ruta')->get();
-        $i = 0;
-
-        foreach ($cotis as $coti) {
-            $i++;
-            $ciudad = Ciudad::find($coti->ruta->ciudad_origen);
-            $ciudad->estado = Estado::find($ciudad->estado);
-            $coti->ruta->ciudad_origen = $ciudad;
-
-            $ciudad = Ciudad::find($coti->ruta->ciudad_destino);
-            $ciudad->estado = Estado::find($ciudad->estado);
-            $coti->ruta->ciudad_destino = $ciudad;
-
-            $coti->camion->tipo_configuracion = Tipo_configuracion::where('id', '=', $coti->camion->id)->first();
-        }
-        return view('cotizaciones.registrados', compact('cotis'));
+        $cotis = Cotizacion::with('cliente')->get();
+        $grafica1 = GraficaController::Gpay($cotis);
+        $grafica2 = GraficaController::Glinea($cotis);
+        return view('grafica', compact('grafica1'), compact('grafica2'));
     }
 
     function mostrarmensuales()

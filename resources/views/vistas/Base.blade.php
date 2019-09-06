@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Jorge prueba</title>
+  <title>Cotizaciones Coda</title>
 
   <style type="text/css">
     .fa-bars{
@@ -27,6 +27,7 @@
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
 
   @yield('javascript')
 
@@ -54,33 +55,39 @@
       <!-- Nav Item - Pages Collapse Menu -->
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-          <i class="fa fa-spinner fa-spin fa-fw"></i>
+          <i class="fas fa-briefcase"></i>
           <span>Cotizaciones</span>
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-light py-2 collapse-inner rounded">
-            <a class="collapse-item" href="{{url('/mensuales')}}">Mensuales</a>
-            <a class="collapse-item" href="{{url('CotiRegistradas')}}">Registrados</a>
-            <a class="collapse-item" href="{{url('/formRegistrarCotiMensual')}}">Registrar</a>
-            <a class="collapse-item" href="{{url('/FormCotizar')}}">Cotizar</a>
+            <!--<a class="collapse-item" href="url('/mensuales')}}">Mensuales</a>-->
+            <a class="collapse-item" href="{{url('CotiRegistradas')}}">Cotizaciones registradas</a>
+            @if(Session::get('usuario')->rol == 1)
+              <a class="collapse-item" href="{{url('/formRegistrarCotiMensual')}}">Importar reporte mensual</a>
+            @endif
+            @if(Session::get('usuario')->rol == 1 || Session::get('usuario')->rol == 2)
+              <a class="collapse-item" href="{{url('/FormCotizar')}}">Cotizar</a>
+            @endif
           </div>
         </div>
       </li>
 
      
-      <!-- Nav Item - Charts -->
-      <li class="nav-item">
-        <a class="nav-link" href="/graficas">
-          <i class="fas fa-exclamation-circle fw"></i>
-          <span>Graficas</span></a>
-      </li>
+      @if(Session::get('usuario')->rol == 1)
+        {{-- 
+        <li class="nav-item">
+          <a class="nav-link" href="{{url('/graficas')}}">
+            <i class="fas fa-chart-bar fw"></i>
+            <span>Graficas</span></a>
+        </li> --}}
 
-      <!-- Nav Item - Tables -->
-      <li class="nav-item">
-        <a class="nav-link" href="tables.html">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Descs</span></a>
-      </li>
+        <!-- Nav Item - Charts -->
+        <li class="nav-item">
+          <a class="nav-link" href="{{url('/GestionarUsuarios')}}">
+            <i class="fas fa-users fw"></i>
+            <span>Usuarios</span></a>
+        </li>
+      @endif
 
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">
@@ -125,7 +132,7 @@
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline small">{{session('usuario')->user_name}}</span>
-                <img class="img-profile rounded-circle" src="{{url('img/usuario.png')}}"> 
+                <i class="fas fa-user"></i>
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -168,8 +175,10 @@
   <script src="js/demo/chart-area-demo.js"></script>
   <script src="js/demo/chart-pie-demo.js"></script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+  @include('sweet::alert')
+  @include('toast::messages-jquery')
   @yield('librerias')
-  @include('sweetalert::alert')
 
 </body>
 
